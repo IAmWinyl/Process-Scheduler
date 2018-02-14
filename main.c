@@ -3,11 +3,20 @@
 #include <ctype.h>
 #include <string.h>
 
-// Global Variables
+// Struct to store our process information
+struct process {
+    int arrival;
+    int burst;
+};
+
+// Gloabl Variables
 int pcount = 0;
 int runfor = 0;
 int type = 0;
 int quantum = 0;
+
+// List of our struct objects
+process processList[];
 
 char** readFile();
 int parseFile(char** buf);
@@ -96,33 +105,49 @@ int parseFile(char** buf) {
 			// Processcount
 			if(strncmp(substr(buf[i],0,11),"processcount",12) == 0) {
 				pcount = charToInt(buf[i], 12);
-				printf("Process Count: %d\n", pcount); // DEBUG
+				printf("%d processes\n", pcount); // DEBUG
+                
+                processList = (process*) calloc(pcount, sizeof(process));
+                
+                for(int i = 0;i < pcount;i++)
+                    processList[i] = calloc(sizeof(process));
+                    
 			}
 			// Runfor
 			else if(strncmp(substr(buf[i],0,5),"runfor",6) == 0) {
 				runfor = charToInt(buf[i], 6);
-				printf("Run For: %d\n", runfor); // DEBUG
+				// printf("Run For: %d\n", runfor); // DEBUG
 			}
 			// Use
 			else if(strncmp(substr(buf[i],0,2),"use",3) == 0) {
 				switch(buf[i][3]) {
 					case 'f': // First-Come-First-Served
 						type = 1;
+                        printf("Using (First-Come-First-Served) %d\n", type); // %d is for DEBUG
 						break;
 					case 's': // Shortest Job First
 						type = 2;
+                        printf("Using Shortest Job First (Preemptive) %d\n", type); // %d is for DEBUG
 						break;
 					case 'r': // Round Robin
 						type = 3;
+                        printf("Using Round-Robin %d\n", type); // %d is for DEBUG
 						break;
 				}
-				printf("Use: %d\n", type); // DEBUG
 			}
 			// Quantum
 			else if(strncmp(substr(buf[i],0,6),"quantum",7) == 0) {
 				quantum = charToInt(buf[i], 7);
 				printf("Quantum: %d\n", quantum); // DEBUG
 			}
+            // Each Processes's Information
+            else if(strncmp(substr(buf[i],0,11),"process name",12) == 0) {
+                processList[charToInt(buf[i], 14)].arrival = charToInt(buf[i], 24);
+                processList[charToInt(buf[i], 14)].burst = charToInt(buf[i], 32);
+            }
+            // End Case
+            else if(strncmp(substr(buf[i],0,2),"end",3) == 0)
+                break;
 		}
 		else
 			break;
