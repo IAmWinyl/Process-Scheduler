@@ -18,6 +18,15 @@ int quantum = 0;
 // List of our struct objects
 process processList[];
 
+// Process Schedule Timeline
+
+/*
+    (Each array cell is one unit of time. For each unit of time (i) a process (k) is used,
+    we store the process number (k) in every (i) cell.)
+*/
+
+int[] processTimeline;
+
 char** readFile();
 int parseFile(char** buf);
 char* substr(char* str, int startIndex, int endIndex);
@@ -26,8 +35,47 @@ int charToInt(char* str, int startIndex);
 int main(int argc, char *argv[]) {
 
 	parseFile(readFile());
+    
+    switch(type)
+    {
+        case 1:
+            return fcfs();
+            
+        case 2:
+            return sjf();
+            
+        case 3:
+            return rr();
+    }
 
-	return 1;
+	return 0;
+}
+
+// First-Come-First-Served
+int fcfs()
+{
+    for(int i = 0;i < processCount;i++)
+    {
+        
+    }
+}
+
+// Preemptive Shortest Job First
+int sjf()
+{
+    for(int i = 0;i < processCount;i++)
+    {
+        
+    }
+}
+
+// Round-Robin
+int rr()
+{
+    for(int i = 0;i < processCount;i++)
+    {
+        
+    }
 }
 
 char** readFile() {
@@ -116,6 +164,8 @@ int parseFile(char** buf) {
 			// Runfor
 			else if(strncmp(substr(buf[i],0,5),"runfor",6) == 0) {
 				runfor = charToInt(buf[i], 6);
+                
+                processTimeline
 				// printf("Run For: %d\n", runfor); // DEBUG
 			}
 			// Use
@@ -123,7 +173,7 @@ int parseFile(char** buf) {
 				switch(buf[i][3]) {
 					case 'f': // First-Come-First-Served
 						type = 1;
-                        printf("Using (First-Come-First-Served) %d\n", type); // %d is for DEBUG
+                        printf("Using First-Come-First-Served %d\n", type); // %d is for DEBUG
 						break;
 					case 's': // Shortest Job First
 						type = 2;
@@ -138,12 +188,12 @@ int parseFile(char** buf) {
 			// Quantum
 			else if(strncmp(substr(buf[i],0,6),"quantum",7) == 0) {
 				quantum = charToInt(buf[i], 7);
-				printf("Quantum: %d\n", quantum); // DEBUG
+				// printf("Quantum: %d\n", quantum); // DEBUG
 			}
             // Each Processes's Information
             else if(strncmp(substr(buf[i],0,11),"process name",12) == 0) {
-                processList[charToInt(buf[i], 14)].arrival = charToInt(buf[i], 24);
-                processList[charToInt(buf[i], 14)].burst = charToInt(buf[i], 32);
+                processList[charToInt(buf[i], 14) - 1].arrival = charToInt(buf[i], 24);
+                processList[charToInt(buf[i], 14) - 1].burst = charToInt(buf[i], 32);
             }
             // End Case
             else if(strncmp(substr(buf[i],0,2),"end",3) == 0)
@@ -153,6 +203,7 @@ int parseFile(char** buf) {
 			break;
 	}
 
+    return 1;
 }
 
 char* substr(char* str, int startIndex, int endIndex) {
