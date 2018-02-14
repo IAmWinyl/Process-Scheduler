@@ -188,7 +188,7 @@ int parseFile(char** buf) {
 			// Quantum
 			else if(strncmp(substr(buf[i],0,6),"quantum",7) == 0) {
 				quantum = charToInt(buf[i], 7);
-				// printf("Quantum: %d\n", quantum); // DEBUG
+				printf("Quantum %d\n", quantum); // DEBUG
 			}
             // Each Processes's Information
             else if(strncmp(substr(buf[i],0,11),"process name",12) == 0) {
@@ -197,10 +197,16 @@ int parseFile(char** buf) {
             }
             // End Case
             else if(strncmp(substr(buf[i],0,2),"end",3) == 0)
+            {
+                printf("\n");
                 break;
+            }
 		}
 		else
+        {
+            printf("\n");
 			break;
+        }
 	}
 
     return 1;
