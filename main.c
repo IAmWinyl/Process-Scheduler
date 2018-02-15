@@ -4,10 +4,10 @@
 #include <string.h>
 
 // Struct to store our process information
-struct process {
+typedef struct process{
     int arrival;
     int burst;
-};
+}process;
 
 // Gloabl Variables
 int pcount = 0;
@@ -16,7 +16,7 @@ int type = 0;
 int quantum = 0;
 
 // List of our struct objects
-process processList[];
+process processList[10000];
 
 // Process Schedule Timeline
 
@@ -25,7 +25,7 @@ process processList[];
     we store the process number (k) in every (i) cell.)
 */
 
-int[] processTimeline;
+int *processTimeline;
 
 char** readFile();
 int parseFile(char** buf);
@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
 
 	parseFile(readFile());
     
+    /*
     switch(type)
     {
         case 1:
@@ -47,6 +48,7 @@ int main(int argc, char *argv[]) {
         case 3:
             return rr();
     }
+    */
 
 	return 0;
 }
@@ -54,7 +56,7 @@ int main(int argc, char *argv[]) {
 // First-Come-First-Served
 int fcfs()
 {
-    for(int i = 0;i < processCount;i++)
+    for(int i = 0;i < pcount;i++)
     {
         
     }
@@ -63,7 +65,7 @@ int fcfs()
 // Preemptive Shortest Job First
 int sjf()
 {
-    for(int i = 0;i < processCount;i++)
+    for(int i = 0;i < pcount;i++)
     {
         
     }
@@ -72,7 +74,7 @@ int sjf()
 // Round-Robin
 int rr()
 {
-    for(int i = 0;i < processCount;i++)
+    for(int i = 0;i < pcount;i++)
     {
         
     }
@@ -155,17 +157,14 @@ int parseFile(char** buf) {
 				pcount = charToInt(buf[i], 12);
 				printf("%d processes\n", pcount); // DEBUG
                 
-                processList = (process*) calloc(pcount, sizeof(process));
-                
-                for(int i = 0;i < pcount;i++)
-                    processList[i] = calloc(sizeof(process));
+                processList = malloc(pcount * sizeof(process));
                     
 			}
 			// Runfor
 			else if(strncmp(substr(buf[i],0,5),"runfor",6) == 0) {
 				runfor = charToInt(buf[i], 6);
                 
-                processTimeline
+                processTimeline = malloc(runfor * sizeof(int));
 				// printf("Run For: %d\n", runfor); // DEBUG
 			}
 			// Use
