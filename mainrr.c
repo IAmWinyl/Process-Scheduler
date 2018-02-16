@@ -18,11 +18,11 @@ typedef struct Process {
     int end;
     int originalburst;
 
-} process;
+} rprocess;
 
 // basic linked list used for the process queue
 typedef struct Node{
-    process * proc;
+    rprocess * proc;
     struct node * next;
 }node;
 
@@ -33,8 +33,8 @@ typedef struct Queue{
 }queue;
 
 // Process functions
-process * createProcess(char *name, int burst, int arrival){
-    process *p = malloc(sizeof(process));
+rprocess * createProcess(char *name, int burst, int arrival){
+    rprocess *p = malloc(sizeof(rprocess));
     p->name = name;
     p->burst = burst;
     p->arrival = arrival;
@@ -43,7 +43,7 @@ process * createProcess(char *name, int burst, int arrival){
     return p;
 }
 
-process * freeProcess(process *p){
+rprocess * freeProcess(rprocess *p){
     if(p != NULL){
         if(p->name != NULL){
             // free the process name array
@@ -59,7 +59,7 @@ process * freeProcess(process *p){
 }
 
 // Node functions
-node * createNode(process * p){
+node * createNode(rprocess * p){
     node *n = malloc(sizeof(node));
     n->next = NULL;
     n->proc = p;
@@ -145,7 +145,7 @@ void printQueue(queue *q){
 }
 
 // adds a node to the end of the queue
-queue * appendQueue(queue *q, process *p){
+queue * appendQueue(queue *q, rprocess *p){
     node *n = createNode(p);
     if(q->head == NULL){
         // queue is currently empty
@@ -556,8 +556,8 @@ char * getProcName(char * procstr){
 
 // gets the first process string it finds in procFile, makes a process object with it, then returns the object. returns NULL if no process found
 // Assumptions - each process string uses correct syntax
-process * getProcess(FILE * procFile){
-    process *proc = NULL;
+rprocess * getProcess(FILE * procFile){
+    rprocess *proc = NULL;
 
     int i = 0; // str index
     int j = 0; // buffer index;
@@ -613,10 +613,10 @@ process * getProcess(FILE * procFile){
 
 
 // bubble sort for process arrays
-process ** sortProcesses(process ** processes, int len)
+rprocess ** sortProcesses(rprocess ** processes, int len)
 {
     int i, j;
-    process * temp = NULL;
+    rprocess * temp = NULL;
     int s = len;
     for (i = 0; i < s - 1; i++)
     {
@@ -637,9 +637,9 @@ process ** sortProcesses(process ** processes, int len)
 }
 
 // creates a process array using a process.in file and return it
-process ** getAllProcesses(FILE *procFile){
+rprocess ** getAllProcesses(FILE *procFile){
 
-    process **processes = NULL;
+    rprocess **processes = NULL;
 
        int i = 0;
 
@@ -650,7 +650,7 @@ process ** getAllProcesses(FILE *procFile){
     if(procCount != NULL){
 
         // make a process array
-        processes = malloc(procCount*sizeof(process));
+        processes = malloc(procCount*sizeof(rprocess));
 
         // get all processes from the processes.in file and add them to the processes array
         for(i = 0; i < procCount; i++){
@@ -662,7 +662,7 @@ process ** getAllProcesses(FILE *procFile){
     return processes;
 }
 
-void printprocess(process *p){
+void printprocess(rprocess *p){
     if (p != NULL) {
         printf("name of the process is: %s\n", p->name);
         printf("burst of the process is: %d\n", p->burst);
@@ -703,10 +703,10 @@ int roundRobin(FILE * processFile, FILE * outputFile){
     int newprocselected = 0;
 
     queue * processqueue = NULL;
-    process * procptr = NULL;
+    rprocess * procptr = NULL;
     node * tempnode = NULL;
 
-    process **processes = NULL;
+    rprocess **processes = NULL;
 
 
 
@@ -762,7 +762,7 @@ int roundRobin(FILE * processFile, FILE * outputFile){
             processes = getAllProcesses(processFile);
 
             // backup the original orientation of the processes array
-            process *original[pcval];
+            rprocess *original[pcval];
             //original = malloc(sizeof(pcval*sizeof(process*)));
 
 
@@ -782,8 +782,8 @@ int roundRobin(FILE * processFile, FILE * outputFile){
                 i = 0;
                 int qctr = qval;
 
-                process * currentproc = NULL;
-                process * prevproc = NULL;
+                rprocess * currentproc = NULL;
+                rprocess * prevproc = NULL;
 
                 // run the scheduler for rfval time units
                 for (currentime = 0; currentime < rfval; currentime++) {
@@ -914,21 +914,22 @@ int roundRobin(FILE * processFile, FILE * outputFile){
     return 0;
 }
 
-
-
-// everything above needs to be included, everything below does not and is just an example of how to use the function
 // program POE
 int main() {
 
     // Open the process.in file as read only
     FILE *processFile = NULL;
     processFile = fopen("processes.in", "r");
-    
-    // Create/open the processes.out file
+    int *temp = NULL;
+    int useval = -1;
+    int pcval = -1;
+    int rfval = -1;
+    int qval = -1;
+
+
     FILE * outputFile = NULL;
     outputFile = fopen ("processes.out","w");
 
-    // run the rr scheduler
     roundRobin(processFile, outputFile);
 
     // close the processes.in file stream
