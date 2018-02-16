@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <string.h>
 
+#define FALSE 0
+#define TRUE 1
 
 // Struct to store our process information
 typedef struct process {
@@ -41,48 +43,65 @@ int main(int argc, char *argv[]) {
 
 	parseFile(readFile());
     
-    /*
+    
     switch(type)
     {
         case 1:
             return fcfs();
-			break;
             
         case 2:
             return sjf();
-			break;
             
         case 3:
             return rr();
-			break;
-
-        case default:
-        	printf("ERR: Invalid schedule algorithm.\n");
-        	exit(-1);
-        	break;
     }
-    */
+    
 
 	return 0;
 }
 
 // First-Come-First-Served
 int fcfs() {
-	int queuePos = 0;
+	int queuePos = -1;
 	process *queue;
+	int running = FALSE, runningPos = -1;
 
-	queue = calloc(sizeof(process),pcount);
+	queue = malloc(sizeof(process)*pcount);
 
 	// Loop time
     for(int i = 0; i < runfor; i++) {
+    	// Loop for arrivals
     	for(int j = 0; j < pcount; j++){
-	       if(processList[j].arrival == i) {
-				queue[queuePos++] = processList[j];
-				printf("Time %d: Process P", i);
+	       	if(processList[j].arrival == i) {
+	       		queuePos++;
+				queue[queuePos] = processList[j];
+				printf("Time %d: %s arrived\n", i, processList[j].name);
 			}
 		}
-
+		// If a process is running, check if done or more burst is left
+		if(running == TRUE) {
+			if(queue[runningPos].burst == 1) {
+				printf("Time %d: %s finished\n", i, queue[runningPos].name);
+				running = FALSE;
+			}
+			else {
+				queue[runningPos].burst--;
+			}
+		}
+		// If no process is running
+		if(running == FALSE) {
+			if(runningPos == queuePos) {
+				printf("Time %d: Idle\n", i);
+			}
+			// Loop for new process
+			else if(queuePos != -1) {
+				runningPos++;
+				printf("Time %d: %s selected (burst %d)\n", i, queue[runningPos].name, queue[runningPos].burst);
+				running = TRUE;
+			}
+		}
     }
+    printf("Finished at time %d\n", runfor);
 }
 
 // Preemptive Shortest Job First
