@@ -22,6 +22,9 @@ int quantum = 0;
 // List of our struct objects
 process processList[10000];
 
+// File out
+FILE* output;
+
 // Process Schedule Timeline
 
 /*
@@ -40,6 +43,8 @@ int sjf();
 int rr();
 
 int main(int argc, char *argv[]) {
+
+	output = fopen("processes.out","w");
 
 	parseFile(readFile());
     
@@ -62,6 +67,7 @@ int main(int argc, char *argv[]) {
 
 // First-Come-First-Served
 int fcfs() {
+
 	int queuePos = -1;
 	process *queue;
 	int running = FALSE, runningPos = -1;
@@ -76,12 +82,14 @@ int fcfs() {
 	       		queuePos++;
 				queue[queuePos] = processList[j];
 				printf("Time %d: %s arrived\n", i, processList[j].name);
+				fprintf(output, "Time %d: %s arrived\n", i, processList[j].name);
 			}
 		}
 		// If a process is running, check if done or more burst is left
 		if(running == TRUE) {
 			if(queue[runningPos].burst == 1) {
 				printf("Time %d: %s finished\n", i, queue[runningPos].name);
+				fprintf(output, "Time %d: %s finished\n", i, queue[runningPos].name);
 				running = FALSE;
 			}
 			else {
@@ -92,16 +100,27 @@ int fcfs() {
 		if(running == FALSE) {
 			if(runningPos == queuePos) {
 				printf("Time %d: Idle\n", i);
+				fprintf(output, "Time %d: Idle\n", i);
 			}
 			// Loop for new process
 			else if(queuePos != -1) {
 				runningPos++;
 				printf("Time %d: %s selected (burst %d)\n", i, queue[runningPos].name, queue[runningPos].burst);
+				fprintf(output, "Time %d: %s selected (burst %d)\n", i, queue[runningPos].name, queue[runningPos].burst);
 				running = TRUE;
 			}
 		}
     }
     printf("Finished at time %d\n", runfor);
+    fprintf(output, "Finished at time %d\n", runfor);
+
+
+    //for(int i = 0; i < )
+
+    free(queue);
+    fclose(output);
+
+    return 1;
 }
 
 // Preemptive Shortest Job First
@@ -171,6 +190,7 @@ char** readFile() {
 	}
 
 	// DEBUG
+	/*
 	for(int i = 0; i < 64; i++){
 		if(fbuffer[i][0] != '\0'){
 			for(int j = 0; j < 128; j++){
@@ -185,7 +205,7 @@ char** readFile() {
 			break;
 	}
 	printf("\n\n");
-
+*/
 	fclose(fp);
 	return fbuffer;
 }
@@ -201,6 +221,7 @@ int parseFile(char** buf) {
 			if(strncmp(substr(buf[i],0,11),"processcount",12) == 0) {
 				pcount = charToInt(buf[i], 12);
 				printf("%d processes\n", pcount); // DEBUG
+				fprintf(output, "%d processes\n", pcount);
 			}
 			// Runfor
 			else if(strncmp(substr(buf[i],0,5),"runfor",6) == 0) {
@@ -214,15 +235,17 @@ int parseFile(char** buf) {
 				switch(buf[i][3]) {
 					case 'f': // First-Come-First-Served
 						type = 1;
-                        printf("Using First-Come-First-Served %d\n", type); // %d is for DEBUG
+                        printf("Using First-Come-First-Served\n"); // DEBUG
+                        fprintf(output, "Using First-Come-First-Served\n");
 						break;
 					case 's': // Shortest Job First
 						type = 2;
-                        printf("Using Shortest Job First (Preemptive) %d\n", type); // %d is for DEBUG
+                        printf("Using Shortest Job First (Preemptive)\n"); // DEBUG
 						break;
 					case 'r': // Round Robin
 						type = 3;
-                        printf("Using Round-Robin %d\n", type); // %d is for DEBUG
+                        printf("Using Round-Robin\n"); // DEBUG
+                        fprintf(output, "Using Round-Robin\n");
 						break;
 				}
 			}
@@ -230,6 +253,7 @@ int parseFile(char** buf) {
 			else if(strncmp(substr(buf[i],0,6),"quantum",7) == 0) {
 				quantum = charToInt(buf[i], 7);
 				printf("Quantum %d\n", quantum); // DEBUG
+				fprintf(output, "Quantum %d\n", quantum);
 			}
             // Each Processes's Information
             else if(strncmp(substr(buf[i],0,10),"processname",11) == 0) {
@@ -249,6 +273,7 @@ int parseFile(char** buf) {
             else if(strncmp(substr(buf[i],0,2),"end",3) == 0)
             {
                 printf("\n");
+                fprintf(output,"\n");
                 break;
             }
 		}
@@ -260,9 +285,11 @@ int parseFile(char** buf) {
 	}
 
 	// DEBUG
+	/*
 	for(int i = 0; i < pcount; i++){
 		printf("Process Name: %s | Arrival: %d | Burst: %d\n",processList[i].name, processList[i].arrival, processList[i].burst);
 	}
+	*/
 
     return 1;
 }
