@@ -3,11 +3,13 @@
 #include <ctype.h>
 #include <string.h>
 
+
 // Struct to store our process information
-typedef struct process{
+typedef struct process {
+	char* name;
     int arrival;
     int burst;
-}process;
+} process;
 
 // Gloabl Variables
 int pcount = 0;
@@ -31,6 +33,9 @@ char** readFile();
 int parseFile(char** buf);
 char* substr(char* str, int startIndex, int endIndex);
 int charToInt(char* str, int startIndex);
+int fcfs();
+int sjf();
+int rr();
 
 int main(int argc, char *argv[]) {
 
@@ -41,12 +46,20 @@ int main(int argc, char *argv[]) {
     {
         case 1:
             return fcfs();
+			break;
             
         case 2:
             return sjf();
+			break;
             
         case 3:
             return rr();
+			break;
+
+        case default:
+        	printf("ERR: Invalid schedule algorithm.\n");
+        	exit(-1);
+        	break;
     }
     */
 
@@ -54,18 +67,28 @@ int main(int argc, char *argv[]) {
 }
 
 // First-Come-First-Served
-int fcfs()
-{
-    for(int i = 0;i < pcount;i++)
-    {
-        
+int fcfs() {
+	int queuePos = 0;
+	process *queue;
+
+	queue = calloc(sizeof(process),pcount);
+
+	// Loop time
+    for(int i = 0; i < runfor; i++) {
+    	for(int j = 0; j < pcount; j++){
+	       if(processList[j].arrival == i) {
+				queue[queuePos++] = processList[j];
+				printf("Time %d: Process P", i);
+			}
+		}
+
     }
 }
 
 // Preemptive Shortest Job First
 int sjf()
 {
-    for(int i = 0;i < pcount;i++)
+    for(int i = 0; i < pcount; i++)
     {
         
     }
@@ -74,7 +97,7 @@ int sjf()
 // Round-Robin
 int rr()
 {
-    for(int i = 0;i < pcount;i++)
+    for(int i = 0; i < pcount; i++)
     {
         
     }
@@ -149,6 +172,9 @@ char** readFile() {
 }
 
 int parseFile(char** buf) {
+	int processPos = 0;
+	int length, endIndex, startIndex;
+
 	for(int i = 0; i < 64; i++){
 		if(buf[i] != NULL) {
 
@@ -156,9 +182,6 @@ int parseFile(char** buf) {
 			if(strncmp(substr(buf[i],0,11),"processcount",12) == 0) {
 				pcount = charToInt(buf[i], 12);
 				printf("%d processes\n", pcount); // DEBUG
-                
-                processList = malloc(pcount * sizeof(process));
-                    
 			}
 			// Runfor
 			else if(strncmp(substr(buf[i],0,5),"runfor",6) == 0) {
@@ -190,9 +213,18 @@ int parseFile(char** buf) {
 				printf("Quantum %d\n", quantum); // DEBUG
 			}
             // Each Processes's Information
-            else if(strncmp(substr(buf[i],0,11),"process name",12) == 0) {
-                processList[charToInt(buf[i], 14) - 1].arrival = charToInt(buf[i], 24);
-                processList[charToInt(buf[i], 14) - 1].burst = charToInt(buf[i], 32);
+            else if(strncmp(substr(buf[i],0,10),"processname",11) == 0) {
+            	// Store name substring
+            	endIndex = (strstr(buf[i],"arrival")) - (buf[i]);
+            	processList[processPos].name = calloc(sizeof(char), endIndex - 11);
+            	strcpy(processList[processPos].name,substr(buf[i], 11,endIndex - 1));
+
+            	// Store arrival and burst substring
+            	startIndex = endIndex;
+            	endIndex = (strstr(buf[i],"burst")) - (buf[i]);
+                processList[processPos].arrival = charToInt(substr(buf[i], startIndex, endIndex - 1),7);
+                processList[processPos].burst = charToInt(buf[i], endIndex + 5);
+                processPos++;
             }
             // End Case
             else if(strncmp(substr(buf[i],0,2),"end",3) == 0)
@@ -206,6 +238,11 @@ int parseFile(char** buf) {
             printf("\n");
 			break;
         }
+	}
+
+	// DEBUG
+	for(int i = 0; i < pcount; i++){
+		printf("Process Name: %s | Arrival: %d | Burst: %d\n",processList[i].name, processList[i].arrival, processList[i].burst);
 	}
 
     return 1;
