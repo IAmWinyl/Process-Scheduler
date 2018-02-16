@@ -11,6 +11,8 @@ typedef struct process {
 	char* name;
     int arrival;
     int burst;
+    int wait;
+    int turnaround;
 } process;
 
 // Gloabl Variables
@@ -90,6 +92,7 @@ int fcfs() {
 			if(queue[runningPos].burst == 1) {
 				printf("Time %d: %s finished\n", i, queue[runningPos].name);
 				fprintf(output, "Time %d: %s finished\n", i, queue[runningPos].name);
+				queue[runningPos].turnaround = i - queue[runningPos].arrival;
 				running = FALSE;
 			}
 			else {
@@ -107,15 +110,20 @@ int fcfs() {
 				runningPos++;
 				printf("Time %d: %s selected (burst %d)\n", i, queue[runningPos].name, queue[runningPos].burst);
 				fprintf(output, "Time %d: %s selected (burst %d)\n", i, queue[runningPos].name, queue[runningPos].burst);
+				queue[runningPos].wait = i - queue[runningPos].arrival;
 				running = TRUE;
 			}
 		}
     }
-    printf("Finished at time %d\n", runfor);
-    fprintf(output, "Finished at time %d\n", runfor);
+    printf("Finished at time %d\n\n", runfor);
+    fprintf(output, "Finished at time %d\n\n", runfor);
 
 
-    //for(int i = 0; i < )
+    // Turnaround and Wait time
+    for(int i = 0; i <= queuePos; i++) {
+    	printf("%s wait %d turnaround %d\n",queue[i].name, queue[i].wait, queue[i].turnaround);
+    	fprintf(output, "%s wait %d turnaround %d\n",queue[i].name, queue[i].wait, queue[i].turnaround);
+    }
 
     free(queue);
     fclose(output);
