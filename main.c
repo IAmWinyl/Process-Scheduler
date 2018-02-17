@@ -1060,13 +1060,13 @@ int fcfs() {
 // Preemptive Shortest Job First
 int sjf()
 {
-    int minimumTimeRemaining = 10000000, running = FALSE;
+    int minimumTimeRemaining = 10000000, allFinished = FALSE, running = FALSE;
     
     for(int i = 0;i < pcount; i++)
     {
         processList[i].timeRemaining = processList[i].burst;
         
-        if(processList[i].timeRemaining < minimumTimeRemaining)
+        if((processList[i].arrival == 0) && (processList[i].timeRemaining < minimumTimeRemaining))
             minimumTimeRemaining = processList[i].timeRemaining;
     }
     
@@ -1087,8 +1087,8 @@ int sjf()
             {
                 if(--processList[j].timeRemaining > 0)
                 {
-                    printf("Time %d: %s selected (burst %d)\n", i, processList[j].name, processList[j].timeRemaining);
-                    fprintf(output, "Time %d: %s selected (burst %d)\n", i, processList[j].name, processList[j].timeRemaining);
+                    printf("Time %d: %s selected (burst %d)\n", i, processList[j].name, (processList[j].timeRemaining+1));
+                    fprintf(output, "Time %d: %s selected (burst %d)\n", i, processList[j].name, (processList[j].timeRemaining+1));
                     running = TRUE;
                 }
                 
@@ -1109,9 +1109,12 @@ int sjf()
                 
                 break;
             }
+            
+            if(j == (pcount - 1))
+                allFinished = TRUE;
         }
         
-        if(running == FALSE)
+        if((running == FALSE) && (allFinished == TRUE))
         {
             printf("Time %d: Idle\n", i);
             fprintf(output, "Time %d: Idle\n", i);
