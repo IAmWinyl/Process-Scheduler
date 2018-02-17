@@ -767,15 +767,12 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
 
     rprocess **processes = NULL;
 
-
     int i = 0; // processarray index
     int currentprocessindex = -1;
     int nextprocessindex = -1;
     int currentime = 0;
     int cpuisidle = 1;
     int newprocselected = 0;
-
-
 
     // if use command is rr, get quantum command value
     if (useval = err) {
@@ -967,6 +964,7 @@ typedef struct process {
     int burst;
     int wait;
     int turnaround;
+    int timeRemaining;
 } process;
 
 // Gloabl Variables
@@ -1065,18 +1063,72 @@ int fcfs() {
 // Preemptive Shortest Job First
 int sjf()
 {
-    for(int i = 0; i < pcount; i++)
+    int minimumTimeRemaining = 10000000, running = FALSE;
+    
+    for(int i = 0;i < pcount; i++)
     {
-
+        processList[i].timeRemaining = processList[i].burst;
+        
+        if(processList[i].timeRemaining < minimumTimeRemaining)
+            minimumTimeRemaining = processList[i].timeRemaining;
     }
-}
-
-// Round-Robin
-int rr()
-{
+    
+    for(int i = 0;i < runfor;i++)
+    {
+        for(int j = 0;j < pcount;j++)
+        {
+            if(processList[j].arrival == i)
+            {
+                printf("Time %d: %s arrived\n", i, processList[j].name);
+                fprintf(output, "Time %d: %s arrived\n", i, processList[j].name);
+            }
+        }
+        
+        for(int j = 0;j < pcount; j++)
+        {
+            if((processList[j].arrival <= i) && (processList[j].timeRemaining <= minimumTimeRemaining) && (0 < processList[j].timeRemaining))
+            {
+                if(--processList[j].timeRemaining > 0)
+                {
+                    printf("Time %d: %s selected (burst %d)\n", i, processList[j].name, processList[j].timeRemaining);
+                    fprintf(output, "Time %d: %s selected (burst %d)\n", i, processList[j].name, processList[j].timeRemaining);
+                    running = TRUE;
+                }
+                
+                else
+                {
+                    printf("Time %d: %s finished\n", i, processList[j].name);
+                    fprintf(output, "Time %d: %s finished\n", i, processList[j].name);
+                    
+                    processList[j].wait = ((i + 1) - processList[j].burst - processList[j].arrival);
+                    
+                    if(processList[j].wait < 0)
+                        processList[j].wait = 0;
+                    
+                    processList[j].turnaround = ((processList[j].burst + processList[j].wait) - processList[j].arrival);
+                    
+                    running = FALSE;
+                }
+                
+                break;
+            }
+        }
+        
+        if(running == FALSE)
+        {
+            printf("Time %d: Idle\n", i);
+            fprintf(output, "Time %d: Idle\n", i);
+        }
+    }
+    
+    printf("Finished at time %d\n\n", runfor);
+    fprintf(output, "Finished at time %d\n\n", runfor);
+    
+    // Turnaround and Wait time
     for(int i = 0; i < pcount; i++)
     {
-
+        printf("%s wait %d turnaround %d\n", processList[i].name, processList[i].wait, processList[i].turnaround);
+        fprintf(output, "%s wait %d turnaround %d\n", processList[i].name, processList[i].wait, processList[i].turnaround);
     }
 }
 
@@ -1270,10 +1322,6 @@ int charToInt(char* str, int startIndex) {
 
 // MERGER END
 
-
-
-
-
 // program POE
 
 
@@ -1325,5 +1373,3 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
-
-
