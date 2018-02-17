@@ -1236,6 +1236,7 @@ int parseFile(char** buf) {
                     case 's': // Shortest Job First
                         type = 2;
                         printf("Using Shortest Job First (Preemptive)\n"); // DEBUG
+                        fprintf(output, "Using Shortest Job First (Preemptive)\n");
                         break;
                     case 'r': // Round Robin
                         type = 3;
