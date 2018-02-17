@@ -1081,10 +1081,13 @@ int sjf()
             }
         }
         
-        for(int j = 0;j < pcount; j++)
+        for(int j = 0;j < pcount;j++)
         {
             if((processList[j].arrival <= i) && (processList[j].timeRemaining <= minimumTimeRemaining) && (0 < processList[j].timeRemaining))
             {
+                if(running == TRUE)
+                    break;
+                
                 if(--processList[j].timeRemaining > 0)
                 {
                     printf("Time %d: %s selected (burst %d)\n", i, processList[j].name, (processList[j].timeRemaining+1));
@@ -1094,18 +1097,19 @@ int sjf()
                 
                 else
                 {
-                    printf("Time %d: %s finished\n", i, processList[j].name);
-                    fprintf(output, "Time %d: %s finished\n", i, processList[j].name);
+                    printf("Time %d: %s finished\n", (i + 1), processList[j].name);
+                    fprintf(output, "Time %d: %s finished\n", (i + 1), processList[j].name);
                     
                     processList[j].wait = ((i + 1) - processList[j].burst - processList[j].arrival);
                     
                     if(processList[j].wait < 0)
                         processList[j].wait = 0;
                     
-                    processList[j].turnaround = ((processList[j].burst + processList[j].wait) - processList[j].arrival);
+                    processList[j].turnaround = ((processList[j].burst + processList[j].wait));
                     
                     running = FALSE;
                 }
+                    
                 
                 break;
             }
