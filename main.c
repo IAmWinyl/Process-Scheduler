@@ -1,11 +1,11 @@
 // COP 4600 - Programming Assignment 1
-// Student: Jonathan Killeen
+// Students: Serra Abak, Ian Lewis Jonathan Killeen
 // Instructor: Matthew B. Gerber Ph.D.
 
-//This version of Round-Robin should not run the scheduler immediately upon the arrival of a new process, unless the CPU is currently idle.
-//Your program should ignore everything on a line after a # mark and ignore additional spaces in input.
 
 // Assignment: Implement the First-Come First-Served, preemptive Shortest Job First, and Round-Robin algorithms as for single processors.
+//This version of Round-Robin should not run the scheduler immediately upon the arrival of a new process, unless the CPU is currently idle.
+//Your program should ignore everything on a line after a # mark and ignore additional spaces in input.
 
 // Assumptions
 // no ambiguous case
@@ -59,6 +59,15 @@ typedef struct Queue{
     struct node * tail;
 
 }queue;
+
+
+char** readFile();
+int parseFile(char** buf);
+char* substr(char* str, int startIndex, int endIndex);
+int charToInt(char* str, int startIndex);
+int fcfs();
+int sjf();
+int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FILE *processFile);
 
 
 // Process functions
@@ -197,7 +206,7 @@ queue * appendQueue(queue *q, rprocess *p){
     }
 
     return q;
-};
+}
 
 // removes the head from queue and assigns a new one
 queue * removeHead(queue *q){
@@ -240,7 +249,7 @@ queue * removeHead(queue *q){
     }
 
     return q;
-};
+}
 
 // frees a queue
 queue * freeQueue(queue *q){
@@ -293,8 +302,6 @@ queue * createQueue(){
     return q;
 }
 
-
-
 // returns true if the char is a letter, false otherwise
 int isLetter(char c){
     int isletter = 0;
@@ -311,7 +318,7 @@ int getCommandType(char * str){
     int i = 0;
 
     while(str[i] != '\0' && str[i] != '#'){
-//        printf("%c\n", str[i]);
+        //printf("%c\n", str[i]);
         if(isLetter(str[i])){
 
             // found the command
@@ -401,11 +408,11 @@ int * extractNuminStr(char *str){
             }
         }
 
-//        printf("buffer is %s\n", &buffer);
+    //        printf("buffer is %s\n", &buffer);
         // convert buffer to int
         returnnum = atoi(buffer);
 
-//        printf("buffer num is %d\n", returnnum);
+    //        printf("buffer num is %d\n", returnnum);
         returnnumptr = &returnnum;
 
 
@@ -547,7 +554,7 @@ char * getProcName(char * procstr){
 
     // get the index of the process name value
     namestr = strstr(procstr, "process name");
-//    printf("%s", namestr);
+    //    printf("%s", namestr);
     // get the start char of the process name value
     while(namestr[i] == ' '){
         i++;
@@ -563,9 +570,9 @@ char * getProcName(char * procstr){
 
 
     len = end-start;
-//    printf("\nstart %d\n", start);
-//    printf("\nend %d\n", end);
-//    printf("\nlen %d\n", len);
+    //    printf("\nstart %d\n", start);
+    //    printf("\nend %d\n", end);
+    //    printf("\nlen %d\n", len);
 
 
     // copy sub string process name to a new string
@@ -576,10 +583,10 @@ char * getProcName(char * procstr){
     }
 
     // end string with a terminating value
-//    i++;
+    //    i++;
     procnameptr[i] = '\0';
 
-//    printf("name of the process is: %s\n", procnameptr);
+    //    printf("name of the process is: %s\n", procnameptr);
     return procnameptr;
 }
 
@@ -628,7 +635,7 @@ rprocess * getProcess(FILE * procFile){
 
             proc = createProcess(currentname, currentburst, currentarrival);
 
-//             found a process string
+    //             found a process string
 
 
             // find 1 process and break
@@ -662,7 +669,6 @@ rprocess ** sortProcesses(rprocess ** processes, int len)
     }
 
     return processes;
-
 }
 
 // creates a process array using a process.in file and return it
@@ -731,27 +737,27 @@ int roundRobinHelper(FILE * processFile, FILE * outputFile){
     tempv = getCommandVal(processFile, euse);
     if(tempv != NULL){
         useval = *tempv;
-//        printf("use command value is %d\n", useval);
+    //        printf("use command value is %d\n", useval);
     }
 
     // get processcount command value
     tempv = getCommandVal(processFile, processcount);
     if(tempv != NULL){
         pcval = *tempv;
-//        printf("processcount command value is %d\n", pcval);
+    //        printf("processcount command value is %d\n", pcval);
     }
 
     // get run for command value
     tempv = getCommandVal(processFile, erunfor);
     if(tempv != NULL){
         rfval = *tempv;
-//        printf("run for command value is %d\n", rfval);
+    //        printf("run for command value is %d\n", rfval);
     }
 
     tempv = getCommandVal(processFile, equantum);
     if (tempv != NULL) {
         qval = *tempv;
-//            printf("quantum command value is %d\n", qval);
+    //            printf("quantum command value is %d\n", qval);
     }
 
     roundRobin(useval, pcval, rfval, qval, outputFile, processFile);
@@ -779,12 +785,12 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
         // get quantum command value
 
 
-        printf("     %d processes\n", pcval);
-        fprintf(outputFile,"     %d processes\n", pcval);
-        printf("     Using Round-Robin\n");
-        fprintf(outputFile,"     Using Round-Robin\n");
-        printf("     Quantum %d\n\n", qval);
-        fprintf(outputFile,"     Quantum %d\n\n", qval);
+        printf("%d processes\n", pcval);
+        fprintf(outputFile,"%d processes\n", pcval);
+        printf("Using Round-Robin\n");
+        fprintf(outputFile,"Using Round-Robin\n");
+        printf("Quantum %d\n\n", qval);
+        fprintf(outputFile,"Quantum %d\n\n", qval);
 
         if (0 && pcval == 1) {
             procptr = getProcess(processFile);
@@ -825,8 +831,8 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
                     // add new arrivals to queue
                     // if a process arrives, create a node, add it to the queue
                     if (i < pcval && processes[i]->arrival == currentime) {
-                        printf("     Time %d: %s arrived\n", currentime, processes[i]->name);
-                        fprintf(outputFile,"     Time %d: %s arrived\n", currentime, processes[i]->name);
+                        printf("Time %d: %s arrived\n", currentime, processes[i]->name);
+                        fprintf(outputFile,"Time %d: %s arrived\n", currentime, processes[i]->name);
                         //printprocess(processes[i]);
 
                         appendQueue(processqueue, processes[i]);
@@ -839,8 +845,8 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
                     // if there are no processes to run, idle
                     if(processqueue->head == NULL) {
                         // there are no processes to run, idle
-                        printf("     Time %d: Idle\n", currentime);
-                        fprintf(outputFile,"     Time %d: Idle\n", currentime);
+                        printf("Time %d: Idle\n", currentime);
+                        fprintf(outputFile,"Time %d: Idle\n", currentime);
                     }else{
                         // there are 1 or more processes to run, select one
                         // situations that could occur here
@@ -854,8 +860,8 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
                         // check if process is finished
                         if(currentproc->burst <= 0){
                             // process finished
-                            printf("     Time %d: %s finished\n", currentime, currentproc->name);
-                            fprintf(outputFile,"     Time %d: %s finished\n", currentime, currentproc->name);
+                            printf("Time %d: %s finished\n", currentime, currentproc->name);
+                            fprintf(outputFile,"Time %d: %s finished\n", currentime, currentproc->name);
                             // record end time in process
                             currentproc->end = currentime;
 
@@ -869,8 +875,8 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
                             // if there are no processes to run, idle
                             if(processqueue->head == NULL) {
                                 // there are no processes to run, idle
-                                printf("     Time %d: Idle\n", currentime);
-                                fprintf(outputFile,"     Time %d: Idle\n", currentime);
+                                printf("Time %d: Idle\n", currentime);
+                                fprintf(outputFile,"Time %d: Idle\n", currentime);
                                 continue;
                             }else{
                                 // there is a process to run, select it
@@ -891,8 +897,8 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
                             // if there are no processes to run, idle
                             if(processqueue->head == NULL) {
                                 // there are no processes to run, idle
-                                printf("     Time %d: Idle\n", currentime);
-                                fprintf(outputFile,"     Time %d: Idle\n", currentime);
+                                printf("Time %d: Idle\n", currentime);
+                                fprintf(outputFile,"Time %d: Idle\n", currentime);
                                 continue;
                             }else{
                                 // there is a process to run, select it
@@ -905,8 +911,8 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
 
                         //if(currentproc != prevproc){
                         if(qctr == qval){
-                            printf("     Time %d: %s selected (burst %d)\n", currentime, currentproc->name, currentproc->burst);
-                            fprintf(outputFile, "     Time %d: %s selected (burst %d)\n", currentime, currentproc->name, currentproc->burst);
+                            printf("Time %d: %s selected (burst %d)\n", currentime, currentproc->name, currentproc->burst);
+                            fprintf(outputFile, "Time %d: %s selected (burst %d)\n", currentime, currentproc->name, currentproc->burst);
                         }
 
 
@@ -920,18 +926,18 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
                     }
 
                 }
-                printf("     Finished at time %d\n\n", rfval);
-                fprintf(outputFile,"     Finished at time %d\n\n", rfval);
+                printf("Finished at time %d\n\n", rfval);
+                fprintf(outputFile,"Finished at time %d\n\n", rfval);
 
                 int y = 0;
                 for(y = 0; y < pcval; y++){
                     // don't include new line character in the last line
                     if(y != pcval){
-                        printf("     %s wait %d turnaround %d\n", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
-                        fprintf(outputFile,"     %s wait %d turnaround %d\n", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
+                        printf("%s wait %d turnaround %d\n", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
+                        fprintf(outputFile,"%s wait %d turnaround %d\n", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
                     }else{
-                        printf("     %s wait %d turnaround %d", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
-                        fprintf(outputFile,"     %s wait %d turnaround %d", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
+                        printf("%s wait %d turnaround %d", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
+                        fprintf(outputFile,"%s wait %d turnaround %d", original[y]->name, calcWait(original[y]->arrival,original[y]->end,original[y]->originalburst), calcTurnaround(original[y]->arrival,original[y]->end));
 
                     }
 
@@ -948,9 +954,6 @@ int roundRobin(int useval, int pcval, int rfval, int qval, FILE * outputFile, FI
 
     return 0;
 }
-
-
-
 
 // MERGER START
 
@@ -988,12 +991,6 @@ FILE* output;
 
 int *processTimeline;
 
-char** readFile();
-int parseFile(char** buf);
-char* substr(char* str, int startIndex, int endIndex);
-int charToInt(char* str, int startIndex);
-int fcfs();
-int sjf();
 
 
 // First-Come-First-Served
@@ -1006,7 +1003,7 @@ int fcfs() {
     queue = malloc(sizeof(process)*pcount);
 
     // Loop time
-    for(int i = 0; i < runfor; i++) {
+    for(int i = 0; i <= runfor; i++) {
         // Loop for arrivals
         for(int j = 0; j < pcount; j++){
             if(processList[j].arrival == i) {
@@ -1029,7 +1026,7 @@ int fcfs() {
             }
         }
         // If no process is running
-        if(running == FALSE) {
+        if(running == FALSE && i != runfor) {
             if(runningPos == queuePos) {
                 printf("Time %d: Idle\n", i);
                 fprintf(output, "Time %d: Idle\n", i);
@@ -1196,7 +1193,7 @@ char** readFile() {
             break;
     }
     printf("\n\n");
-*/
+    */
     fclose(fp);
     return fbuffer;
 }
